@@ -65,6 +65,7 @@ function App() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [score, setScore] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [showResult, setShowResult] = useState(false);
 
   const totalQuestions = SampleQuestion.length;
 
@@ -74,12 +75,19 @@ function App() {
     ).length;
     setScore(correctAnswers);
     setShowModal(true);
+    setShowResult(true);
   };
 
   const ResetButton = ({ width }) => {
     const { resetForm } = useFormikContext();
     return (
-      <CtaButton onClickButton={resetForm} width={width}>
+      <CtaButton
+        onClickButton={() => {
+          resetForm();
+          setShowResult(false);
+        }}
+        width={width}
+      >
         <Typography>Reset</Typography>
       </CtaButton>
     );
@@ -88,6 +96,7 @@ function App() {
   const handleClose = () => {
     setScore(0);
     setShowModal(false);
+    setShowResult(false);
   };
 
   return (
@@ -129,26 +138,6 @@ function App() {
               title={`Your score is ${score}/${totalQuestions}`}
               buttonText="OK"
             />
-            {/* <CenteredBox>
-              <FlexBox>
-                <Typography
-                  sx={{
-                    fontWeight: theme.fonts.fontWeights.bold,
-                    marginTop: "10px",
-                  }}
-                >
-                  Name
-                </Typography>
-                <Spacer position="right" size="s" />
-                <FormFieldText name="name" placeholder="Enter your name" />
-                <Spacer position="right" size="xl" />
-                <FormSubmitButton>
-                  <Typography>Submit</Typography>
-                </FormSubmitButton>
-                <Spacer position="right" size="xl" />
-                <ResetButton />
-              </FlexBox>
-            </CenteredBox> */}
 
             <CenteredBox sx={{ flexDirection: "column" }}>
               <FlexBox>
@@ -164,10 +153,14 @@ function App() {
                 <FormFieldText name="name" placeholder="Enter your name" />
                 {!isMobile && (
                   <>
-                    <Spacer position="right" size="xl" />
-                    <FormSubmitButton width="100px">
-                      <Typography>Submit</Typography>
-                    </FormSubmitButton>
+                    {!showResult && (
+                      <>
+                        <Spacer position="right" size="xl" />
+                        <FormSubmitButton width="100px">
+                          <Typography>Submit</Typography>
+                        </FormSubmitButton>
+                      </>
+                    )}
                     <Spacer position="right" size="xl" />
                     <ResetButton width="100px" />
                   </>
@@ -178,9 +171,11 @@ function App() {
                 <>
                   <Spacer position="top" size="l" />
                   <FlexBox>
-                    <FormSubmitButton width="100px">
-                      <Typography>Submit</Typography>
-                    </FormSubmitButton>
+                    {!showResult && (
+                      <FormSubmitButton width="100px">
+                        <Typography>Submit</Typography>
+                      </FormSubmitButton>
+                    )}
                     <Spacer position="right" size="xl" />
                     <ResetButton width="100px" />
                   </FlexBox>
@@ -200,6 +195,7 @@ function App() {
                     question={sample.question}
                     choices={sample.choices}
                     solution={sample.solution}
+                    showResult={showResult}
                   />
                 </Grid>
               ))}
